@@ -1,0 +1,123 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Book {
+    private String title;
+    private boolean isAvailable;
+
+    public Book(String title) {
+        this.title = title;
+        this.isAvailable = true;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void borrow() {
+        isAvailable = false;
+    }
+
+    public void returnBook() {
+        isAvailable = true;
+    }
+}
+
+public class LibrarySystem {
+    private static final List<Book> books = new ArrayList<>();
+    private static final List<Book> borrowedBooks = new ArrayList<>(); 
+
+    public static void main(String[] args) {
+        libraryBooks();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nLibrary System:");
+            System.out.println("1. Borrow a Book");
+            System.out.println("2. Return a Book");
+            System.out.println("3. View Borrowed Books");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1 -> borrowBook(scanner);
+                case 2 -> returnBook(scanner);
+                case 3 -> viewBorrowedBooks();
+                case 4 -> {
+                    System.out.println("Exiting the system.");
+                    scanner.close();  
+                    return;
+                }
+                default -> System.out.println("Invalid.");
+            }
+        }
+    }
+
+    private static void libraryBooks() {
+        String[] booksAvailable = {"To Kill a Mockingbird", "1984", "The Great Gatsby", "The Catcher in the Rye", "Moby Dick", "Harry Potter", "War and Peace", "The Hobbit", "Crime and Punishment", "The Lord of the Rings"};
+
+        for (int i = 0; i < booksAvailable.length; i++) {
+            books.add(new Book(booksAvailable[i]));
+        }
+    }
+
+    private static Book findBook(String title) {
+        for (int i = 0; i < books.size(); i++) {
+            if (books.get(i).getTitle().equalsIgnoreCase(title)) {
+                return books.get(i);
+            }
+        }
+        return null; 
+    }
+
+    private static void borrowBook(Scanner scanner) {
+        System.out.print("Enter the title of the book you want to borrow: ");
+        String bookTitle = scanner.nextLine();
+        Book book = findBook(bookTitle);
+
+        if (book == null) {
+            System.out.println("Book not found.");
+        } else if (!book.isAvailable()) {
+            System.out.println("The book is already borrowed.");
+        } else {
+            book.borrow();
+            borrowedBooks.add(book);
+            System.out.println("You have borrowed " + book.getTitle() + ".");
+        }
+    }
+
+    private static void returnBook(Scanner scanner) {
+        System.out.print("Enter the title of the book you want to return: ");
+        String bookTitle = scanner.nextLine();
+        Book book = findBook(bookTitle);
+
+        if (book == null) {
+            System.out.println("Book not found.");
+        } else if (book.isAvailable()) {
+            System.out.println("This book was not borrowed.");
+        } else {
+            book.returnBook();
+            borrowedBooks.remove(book);
+            System.out.println("You have returned " + book.getTitle() + ".");
+        }
+    }
+
+    private static void viewBorrowedBooks() {
+        System.out.println("Your Borrowed Books:");
+        if (borrowedBooks.isEmpty()) {
+            System.out.println("You have not borrowed any books.");
+        } else {
+            for (int i = 0; i < borrowedBooks.size(); i++) {
+                System.out.println(borrowedBooks.get(i).getTitle());
+            }
+        }
+    }
+}
